@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IFS AP Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="ap-calculator.css" />
+  <link rel="icon" type="image/x-icon" href="ifs.ico" />
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <header>
+        <div class="header-main">
+          <img src="logo.png" alt="Ingress FS Logo" class="logo" />
+          <h1>Ingress FS AP Calculator</h1>
+        </div>
+        <p class="disclaimer">
+          This tool runs <strong>locally in your browser</strong>. No stats are sent or stored.
+          Use it to plan AP tuning without exposing your real stats.
+        </p>
+      </header>
+
+      <section class="row">
+        <label for="currentAP">Current AP:</label>
+        <input id="currentAP" type="number" class="ap-input" placeholder="e.g. 404942894" />
+      </section>
+
+      <section class="row">
+        <label for="targetAP">Target AP:</label>
+        <input id="targetAP" type="number" class="ap-input" placeholder="e.g. 405000000" />
+      </section>
+
+      <!-- CONTEXT SECTION (nova) -->
+      <section class="row context-section">
+        <h2>Context (what you can do in this area)</h2>
+        <p class="hint">
+          Select what is realistically possible in your current play area. The automatic planner will respect these options.
+        </p>
+        <div id="contextOptionsContainer" class="context-grid">
+          <!-- preenchido por JS usando CONTEXT_OPTIONS -->
+        </div>
+      </section>
+
+      <!-- DIVISÃO: MODO MANUAL -->
+      <hr class="divider" />
+
+      <section class="row">
+        <h2>Manual AP calculator</h2>
+        <p class="hint">
+          Adjust the quantity of each action or pack to see the AP gained and how close you are to your target.
+        </p>
+      </section>
+
+      <section class="row">
+        <table class="ap-table">
+          <thead>
+            <tr>
+              <th>Use</th>
+              <th>Action / Pack</th>
+              <th>AP per unit</th>
+              <th>Quantity</th>
+              <th>Total AP</th>
+            </tr>
+          </thead>
+          <tbody id="apActionsBody">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </section>
+
+      <section class="row">
+        <div class="status">
+          <p id="apSummary"></p>
+        </div>
+      </section>
+
+      <!-- DIVISÃO: MODO AUTOMÁTICO -->
+      <hr class="divider" />
+
+      <section class="row">
+        <h2>Automatic AP planner (beta)</h2>
+        <p class="hint">
+          Using your current AP, target AP, and context, this planner will attempt to suggest a realistic AP plan.
+        </p>
+      </section>
+
+      <section class="row">
+        <button id="autoPlanBtn">Suggest AP plan</button>
+      </section>
+
+      <section class="row">
+        <div class="status">
+          <p id="autoPlanSummary"></p>
+        </div>
+        <table class="ap-table auto-plan-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Action / Pack</th>
+              <th>AP per unit</th>
+              <th>Quantity</th>
+              <th>Total AP</th>
+            </tr>
+          </thead>
+          <tbody id="autoPlanBody">
+            <!-- Filled by JS (automatic planner) -->
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-left">
+          <p>
+            Created by <strong>ScarePT</strong> with ❤️.
+          </p>
+        </div>
+        <!--<div class="footer-right">
+          <p>Useful links:</p>
+          <ul>
+            <li>
+              <a href="https://fevgames.net/ifs/events/?s=utc" target="_blank" rel="noopener">
+                IngressFS Map
+              </a>
+            </li>
+          </ul>
+        </div>
+        -->
+      </footer>
+    </div>
+  </div>
+  
+  <script src="ap-config.js"></script>
+  <script src="ap-context.js"></script>
+  <script src="ap-calculator.js"></script>
+  <script src="ap-planner.js"></script>
+</body>
+</html>

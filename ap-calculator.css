@@ -1,0 +1,297 @@
+:root {
+  --bg: #0f172a;
+  --fg: #e5e7eb;
+  --accent: #38bdf8;
+  --accent-dark: #0284c7;
+  --border: #1f2937;
+  --error: #f97373;
+  --muted: #9ca3af;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Header */
+.header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.header-main h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+  border-radius: 4px;
+}
+
+.disclaimer {
+  padding: 8px 10px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: #111827;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Rows & inputs */
+.row {
+  margin-top: 16px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+}
+
+.ap-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: #020617;
+  color: var(--fg);
+  font-size: 0.9rem;
+}
+
+.ap-input::placeholder {
+  color: #6b7280;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 4px 0 10px 0;
+}
+
+/* Table */
+.ap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.ap-table thead {
+  background-color: #020617;
+}
+
+.ap-table th,
+.ap-table td {
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+}
+
+.ap-table th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.ap-table td {
+  vertical-align: middle;
+}
+
+.ap-table input[type="number"] {
+  width: 80px;
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: #020617;
+  color: var(--fg);
+}
+
+/* Status */
+.status {
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #22c55e;
+}
+
+.status.error {
+  color: var(--error);
+}
+
+/* Footer */
+.footer {
+  margin-top: 24px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background-color: #020617;
+}
+
+.footer-left,
+.footer-right {
+  flex: 1 1 260px;
+}
+
+.footer-left p {
+  margin: 0 0 4px 0;
+}
+
+.footer-right p {
+  margin: 0 0 4px 0;
+}
+
+.footer-right ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-right li {
+  margin-bottom: 4px;
+}
+
+.footer-right a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-right a:hover {
+  text-decoration: underline;
+}
+
+/* Ícone de aviso ao lado da ação */
+.warning-icon {
+  display: inline-block;
+  margin-left: 6px;
+  color: #f97373; /* vermelho suave */
+  font-size: 0.85rem;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Tooltip container */
+.warning-tooltip {
+  position: absolute;
+  left: 0;
+  top: 120%;
+  z-index: 10;
+  max-width: 260px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: #111827;
+  color: var(--fg);
+  font-size: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+/* Mostrar tooltip quando hover (desktop) */
+.warning-icon:hover .warning-tooltip {
+  display: block;
+}
+
+.context-section h2 {
+  font-size: 1rem;
+  margin: 0 0 4px 0;
+}
+
+.context-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.context-grid label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.context-grid input[type="checkbox"] {
+  flex-shrink: 0;
+}
+
+.divider {
+  margin: 24px 0 16px 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* Botão do planner automático */
+#autoPlanBtn {
+  background-color: var(--accent);
+  color: #0f172a;
+}
+
+#autoPlanBtn:active {
+  background-color: var(--accent-dark);
+}
+
+/* Tabela do plano automático */
+.auto-plan-table {
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .context-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .warning-tooltip {
+    max-width: 90vw;
+  }
+  .header-main {
+    gap: 8px;
+  }
+  .logo {
+    height: 28px;
+  }
+  .ap-table th,
+  .ap-table td {
+    font-size: 0.75rem;
+    padding: 4px 6px;
+  }
+  .footer {
+    flex-direction: column;
+    font-size: 0.75rem;
+    padding: 8px 12px 12px;
+  }
+}
