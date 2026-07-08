@@ -8,88 +8,91 @@
   <link rel="icon" type="image/x-icon" href="ifs.ico" />
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="header-main">
-        <img src="logo.png" alt="Ingress FS Logo" class="logo" />
-        <h1>Ingress FS Stats Masker</h1>
-      </div>
-      <div class="disclaimer">
-        <span class="disclaimer-icon">⚠️</span>
-        <div class="disclaimer-text">
+  <div class="page">
+    <div class="container">
+      <header>
+        <div class="header-main">
+          <img src="logo.png" alt="Ingress FS Logo" class="logo" />
+          <h1>Ingress FS Stats Masker</h1>
+        </div>
+        <div class="disclaimer">
+          <span class="disclaimer-icon">⚠️</span>
+          <div class="disclaimer-text">
+            <p>
+              Esta ferramenta corre <strong>localmente no teu browser</strong>. Nenhuma estatística é enviada ou guardada do nosso lado.
+            </p>
+            <p>
+              Podes usar com segurança para mascarar stats antes de submeter no formulário do First Saturday.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <section class="settings">
+        <h2>Stats to keep untouched</h2>
+        <p class="hint">
+          Select all the boxes you want to keep the original values. All the remain ones will be converted to <code>0</code>.
+          <!--Seleciona as colunas que queres manter com os valores reais. Todas as restantes serão convertidas a <code>0</code>.-->
+        </p>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" class="keep-field" value="Time Span" checked disabled /> Time Span</label>
+          <label><input type="checkbox" class="keep-field" value="Agent Name" checked disabled /> Agent Name</label>
+          <label><input type="checkbox" class="keep-field" value="Agent Faction" checked disabled /> Agent Faction</label>
+          <label><input type="checkbox" class="keep-field" value="Date (yyyy-mm-dd)" checked disabled /> Date (yyyy-mm-dd)</label>
+          <label><input type="checkbox" class="keep-field" value="Time (hh:mm:ss)" checked disabled /> Time (hh:mm:ss)</label>
+          <label><input type="checkbox" class="keep-field" value="Level" checked disabled /> Level</label>
+          <label><input type="checkbox" class="keep-field" value="Lifetime AP" checked disabled /> Lifetime AP</label>
+          <label><input type="checkbox" class="keep-field" value="Current AP" checked disabled /> Current AP</label>
+          <label><input type="checkbox" class="keep-field" value="XM Collected" checked /> XM Collected</label>
+          <label><input type="checkbox" class="keep-field" value="Resonators Deployed" checked /> Resonators Deployed</label>
+          <label><input type="checkbox" class="keep-field" value="Portals Captured" checked /> Portals Captured</label>
+          <label><input type="checkbox" class="keep-field" value="Mods Deployed" checked /> Mods Deployed</label>
+          <label><input type="checkbox" class="keep-field" value="Hacks" checked /> Hacks</label>
+          <label><input type="checkbox" class="keep-field" value="Resonators Destroyed" checked /> Resonators Destroyed</label>
+          <label><input type="checkbox" class="keep-field" value="Distance Walked" checked disabled /> Distance Walked</label>
+        </div>
+      </section>
+
+      <section class="row">
+        <label for="input">Input (raw stats from Ingress):</label>
+        <textarea id="input" placeholder="Paste here the stats you copy from Ingress ..."></textarea>
+        <!--<textarea id="input" placeholder="Cole aqui as stats tal como copiadas do Ingress ..."></textarea>-->
+      </section>
+
+      <section class="row">
+        <button id="maskBtn">Change Stats</button>
+      </section>
+
+      <section class="row">
+        <label for="output">Output (Copy to your IFS form):</label>
+        <textarea id="output" readonly></textarea>
+        <div id="status" class="status"></div>
+      </section>
+
+      <section class="row copy-section">
+        <button id="copyBtn">Copy Output</button>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-left">
           <p>
-            Esta ferramenta corre <strong>localmente no teu browser</strong>. Nenhuma estatística é enviada ou guardada do nosso lado.
-          </p>
-          <p>
-            Podes usar com segurança para mascarar stats antes de submeter no formulário do First Saturday.
+            Created by <strong>ScarePT</strong> with ❤️.
           </p>
         </div>
-      </div>
-    </header>
-
-    <section class="settings">
-      <h2>Stats to keep untouched</h2>
-      <p class="hint">
-        Select all the boxes you want to keep the original values. All the remain ones will be converted to <code>0</code>.
-        <!--Seleciona as colunas que queres manter com os valores reais. Todas as restantes serão convertidas a <code>0</code>.-->
-      </p>
-      <div class="checkbox-grid">
-        <label><input type="checkbox" class="keep-field" value="Time Span" checked disabled /> Time Span</label>
-        <label><input type="checkbox" class="keep-field" value="Agent Name" checked disabled /> Agent Name</label>
-        <label><input type="checkbox" class="keep-field" value="Agent Faction" checked disabled /> Agent Faction</label>
-        <label><input type="checkbox" class="keep-field" value="Date (yyyy-mm-dd)" checked disabled /> Date (yyyy-mm-dd)</label>
-        <label><input type="checkbox" class="keep-field" value="Time (hh:mm:ss)" checked disabled /> Time (hh:mm:ss)</label>
-        <label><input type="checkbox" class="keep-field" value="Level" checked disabled /> Level</label>
-        <label><input type="checkbox" class="keep-field" value="Lifetime AP" checked disabled /> Lifetime AP</label>
-        <label><input type="checkbox" class="keep-field" value="Current AP" checked disabled /> Current AP</label>
-        <label><input type="checkbox" class="keep-field" value="XM Collected" checked /> XM Collected</label>
-        <label><input type="checkbox" class="keep-field" value="Resonators Deployed" checked /> Resonators Deployed</label>
-        <label><input type="checkbox" class="keep-field" value="Portals Captured" checked /> Portals Captured</label>
-        <label><input type="checkbox" class="keep-field" value="Mods Deployed" checked /> Mods Deployed</label>
-        <label><input type="checkbox" class="keep-field" value="Hacks" checked /> Hacks</label>
-        <label><input type="checkbox" class="keep-field" value="Resonators Destroyed" checked /> Resonators Destroyed</label>
-        <label><input type="checkbox" class="keep-field" value="Distance Walked" checked disabled /> Distance Walked</label>
-      </div>
-    </section>
-
-    <section class="row">
-      <label for="input">Input (raw stats from Ingress):</label>
-      <textarea id="input" placeholder="Paste here the stats you copy from Ingress ..."></textarea>
-      <!--<textarea id="input" placeholder="Cole aqui as stats tal como copiadas do Ingress ..."></textarea>-->
-    </section>
-
-    <section class="row">
-      <button id="maskBtn">Change Stats</button>
-    </section>
-
-    <section class="row">
-      <label for="output">Output (Copy to your IFS form):</label>
-      <textarea id="output" readonly></textarea>
-      <div id="status" class="status"></div>
-    </section>
-
-    <section class="row copy-section">
-      <button id="copyBtn">Copy Output</button>
-    </section>
+        <div class="footer-right">
+          <p>Links úteis:</p>
+          <ul>
+            <li>
+              <a href="https://fevgames.net/ifs/events/?s=utc" target="_blank" rel="noopener">
+                IngressFS Map
+              </a>
+            </li>
+          </ul>
+        </div>
+      </footer>
+    </div>
   </div>
 
-  <footer class="footer">
-    <div class="footer-left">
-      <p>
-        Created by <strong>ScarePT</strong> with ❤️.
-      </p>
-    </div>
-    <div class="footer-right">
-      <p>Links úteis:</p>
-      <ul>
-        <li>
-          <a href="https://fevgames.net/ifs/events/?s=utc" target="_blank" rel="noopener">
-            IngressFS Map
-          </a>
-        </li>
-      </ul>
-    </div>
-  </footer>
 
   <script>
     const DEFAULT_MASK_VALUE = "0";
