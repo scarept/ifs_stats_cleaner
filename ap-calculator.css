@@ -313,16 +313,121 @@ label {
   flex: 1 1 240px;
 }
 
-#globalMultiplierOptions label,
-#apexOptions label {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 8px;
-  gap: 4px;
+.boost-block select {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: #020617;
+  color: var(--fg);
+  font-size: 0.85rem;
 }
 
+.apex-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.apex-toggle input[type="checkbox"] {
+  flex-shrink: 0;
+}
+
+.apex-icon {
+  height: 20px;
+  width: auto;
+}
+
+/* Mobile tweaks para boost section */
 @media (max-width: 600px) {
   .boost-grid {
     flex-direction: column;
   }
+}
+
+.delta-row {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: none; /* escondido por omissão; JS pode mudar para block */
+}
+
+.delta-row.visible {
+  display: block;
+}
+
+.delta-value {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.planner-section h2 {
+  font-size: 1rem;
+  margin: 0 0 4px 0;
+}
+
+.planner-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#autoPlanBtn {
+  background-color: var(--accent);
+  color: #0f172a;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#autoPlanBtn:active {
+  background-color: var(--accent-dark);
+}
+
+.auto-plan-table {
+  margin-top: 8px;
+}
+
+.manual-section {
+  margin-top: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: #020617;
+  overflow: hidden;
+}
+
+.manual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.manual-header h2 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.manual-toggle-icon {
+  font-size: 0.9rem;
+  transform: rotate(0deg);
+  transition: transform 0.15s ease-in-out;
+}
+
+.manual-section.collapsed .manual-toggle-icon {
+  transform: rotate(-90deg); /* setinha para a esquerda */
+}
+
+.manual-content {
+  padding: 8px 12px 12px 12px;
+  display: block;
+}
+
+.manual-section.collapsed .manual-content {
+  display: none;
 }

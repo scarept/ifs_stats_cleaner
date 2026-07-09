@@ -31,6 +31,10 @@
         <input id="targetAP" type="number" class="ap-input" placeholder="e.g. 405000000" />
       </section>
 
+      <section class="row delta-row" id="deltaRow">
+  Difference (Target - Current): <span class="delta-value" id="deltaValue">0</span> AP
+</section>
+
       <section class="row boost-section">
   <h2>AP Boost Settings</h2>
 <p class="hint">
@@ -39,18 +43,18 @@
 
 <div class="boost-grid">
     <div class="boost-block">
-      <label for="eventProfileSelect">Event profile:</label>
-      <select id="eventProfileSelect">
-        <!-- preenchido por JS via renderBoostOptions -->
-      </select>
-    </div>
+  <label for="eventProfileSelect">Event profile:</label>
+  <select id="eventProfileSelect">...</select>
+</div>
 
-    <div class="boost-block">
-      <label>
-        <input type="checkbox" id="apexActiveCheckbox" />
-        APEX active
-      </label>
-    </div>
+<div class="boost-block">
+  <label>Apex:</label>
+  <div class="apex-toggle">
+    <input type="checkbox" id="apexActiveCheckbox" />
+    <img src="apex.png" alt="APEX" class="apex-icon" />
+    <span>Apex active</span>
+  </div>
+</div>
   </div>
 
 </section>
@@ -69,47 +73,53 @@
       <!-- DIVISÃO: MODO MANUAL -->
       <hr class="divider" />
 
-      <section class="row">
-        <h2>Manual AP calculator</h2>
-        <p class="hint">
-          Adjust the quantity of each action or pack to see the AP gained and how close you are to your target.
-        </p>
-      </section>
+      <section class="manual-section collapsed" id="manualSection">
+        <div class="manual-header" id="manualHeader">
+          <h2>Manual AP calculator</h2>
+          <span class="manual-toggle-icon">▾</span>
 
-      <section class="row">
-        <table class="ap-table">
-          <thead>
-            <tr>
-              <th>Use</th>
-              <th>Action / Pack</th>
-              <th>AP per unit</th>
-              <th>Quantity</th>
-              <th>Total AP</th>
-            </tr>
-          </thead>
-          <tbody id="apActionsBody">
-            <!-- Filled by JS -->
-          </tbody>
-        </table>
-      </section>
-
-      <section class="row">
-        <div class="status">
-          <p id="apSummary"></p>
+          <p class="hint">
+            Adjust the quantity of each action or pack to see the AP gained and how close you are to your target.
+          </p>
         </div>
-      </section>
 
+      </section>
+      <div class="manual-content">
+        <section class="row">
+          <table class="ap-table">
+            <thead>
+              <tr>
+                <th>Use</th>
+                <th>Action / Pack</th>
+                <th>AP per unit</th>
+                <th>Quantity</th>
+                <th>Total AP</th>
+              </tr>
+            </thead>
+            <tbody id="apActionsBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </section>
+
+        <section class="row">
+          <div class="status">
+            <p id="apSummary"></p>
+          </div>
+        </section>
+      </div>
+      
       <!-- DIVISÃO: MODO AUTOMÁTICO -->
       <hr class="divider" />
 
-      <section class="row">
+      <section class="row planner-section">
         <h2>Automatic AP planner (beta)</h2>
         <p class="hint">
           Using your current AP, target AP, and context, this planner will attempt to suggest a realistic AP plan.
         </p>
       </section>
 
-      <section class="row">
+      <section class="row planner-actions">
         <button id="autoPlanBtn">Suggest AP plan</button>
       </section>
 

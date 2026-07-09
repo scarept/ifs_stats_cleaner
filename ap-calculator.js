@@ -179,6 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("currentAP").addEventListener("input", recalcAP);
   document.getElementById("targetAP").addEventListener("input", recalcAP);
 
+  const manualSection = document.getElementById("manualSection");
+  const manualHeader = document.getElementById("manualHeader");
+  if (manualSection && manualHeader) {
+    manualHeader.addEventListener("click", () => {
+      manualSection.classList.toggle("collapsed");
+    });
+  }
+
   document.addEventListener("input", event => {
     if (
       event.target.classList.contains("qty-input") ||
