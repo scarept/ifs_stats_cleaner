@@ -4,10 +4,14 @@ function renderActionsTable() {
   const tbody = document.getElementById("apActionsBody");
   tbody.innerHTML = "";
 
-  // Primeiro os packs, depois as ações unitárias
+  // AP base: evento "none", sem APEX
+  const eventProfile = AP_EVENT_PROFILES.find(p => p.id === "none");
+  const apexActive = false;
+
+  // Packs
   AP_PACKS.forEach(pack => {
     if (!pack.visible) return;
-    const totalAP = computePackAP(pack);
+    const packAP = computePackAPWithEvents(pack, eventProfile, apexActive);
 
     const tr = document.createElement("tr");
     tr.classList.add("pack-row");
@@ -25,7 +29,7 @@ function renderActionsTable() {
     labelTd.textContent = pack.label;
 
     const apTd = document.createElement("td");
-    apTd.textContent = totalAP;
+    apTd.textContent = packAP;
 
     const qtyTd = document.createElement("td");
     const qtyInput = document.createElement("input");
@@ -47,9 +51,10 @@ function renderActionsTable() {
     tbody.appendChild(tr);
   });
 
-  // Depois as ações unitárias
+  // Ações unitárias
   AP_ACTIONS.forEach(action => {
     if (!action.visible) return;
+
     const tr = document.createElement("tr");
 
     const useTd = document.createElement("td");
@@ -64,22 +69,21 @@ function renderActionsTable() {
     const labelTd = document.createElement("td");
     labelTd.textContent = action.label;
 
-    // Ícone de aviso, se houver warning configurado
     if (action.warning) {
       const warnSpan = document.createElement("span");
       warnSpan.classList.add("warning-icon");
-      warnSpan.textContent = "⚠"; // podes trocar por outro símbolo
+      warnSpan.textContent = "⚠";
 
       const tooltipDiv = document.createElement("div");
       tooltipDiv.classList.add("warning-tooltip");
       tooltipDiv.textContent = action.warningMessage || "Check the conditions for this action.";
-
       warnSpan.appendChild(tooltipDiv);
       labelTd.appendChild(warnSpan);
     }
 
     const apTd = document.createElement("td");
-    apTd.textContent = action.ap;
+    const baseAP = getEffectiveActionAP(action.id, eventProfile, apexActive);
+    apTd.textContent = baseAP;
 
     const qtyTd = document.createElement("td");
     const qtyInput = document.createElement("input");
@@ -106,6 +110,9 @@ function recalcAP() {
   const currentAP = Number(document.getElementById("currentAP").value || 0);
   const targetAP = Number(document.getElementById("targetAP").value || 0);
 
+  const eventProfile = getSelectedEventProfile();
+  const apexActive = isApexActive();
+
   let totalAPFromPacks = 0;
   let totalAPFromActions = 0;
 
@@ -116,11 +123,12 @@ function recalcAP() {
     const totalTd = document.querySelector(`.total-ap[data-type="pack"][data-id="${pack.id}"]`);
 
     const qty = useCheckbox && useCheckbox.checked ? Number(qtyInput.value || 0) : 0;
-    const packAP = computePackAP(pack);
+
+    const packAP = computePackAPWithEvents(pack, eventProfile, apexActive);
     const totalAP = qty * packAP;
 
     totalAPFromPacks += totalAP;
-    totalTd.textContent = totalAP;
+    if (totalTd) totalTd.textContent = totalAP;
   });
 
   // Ações unitárias
@@ -130,10 +138,11 @@ function recalcAP() {
     const totalTd = document.querySelector(`.total-ap[data-type="action"][data-id="${action.id}"]`);
 
     const qty = useCheckbox && useCheckbox.checked ? Number(qtyInput.value || 0) : 0;
-    const totalAP = qty * action.ap;
+    const ap = getEffectiveActionAP(action.id, eventProfile, apexActive);
+    const totalAP = qty * ap;
 
     totalAPFromActions += totalAP;
-    totalTd.textContent = totalAP;
+    if (totalTd) totalTd.textContent = totalAP;
   });
 
   const totalAPFromAll = totalAPFromPacks + totalAPFromActions;
@@ -141,6 +150,7 @@ function recalcAP() {
   const deltaToTarget = targetAP ? finalAP - targetAP : 0;
 
   const summaryEl = document.getElementById("apSummary");
+  if (!summaryEl) return;
 
   if (!targetAP) {
     summaryEl.textContent =
@@ -163,6 +173,8 @@ function recalcAP() {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderActionsTable();
+  renderContextOptions();
+  renderBoostOptions();
 
   document.getElementById("currentAP").addEventListener("input", recalcAP);
   document.getElementById("targetAP").addEventListener("input", recalcAP);

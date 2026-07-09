@@ -7,12 +7,17 @@ function unitWeight(unit) {
   if (unit.type === "action" && ["create_link", "create_field"].includes(unit.id)) return 2;
   if (unit.type === "pack" && unit.ref.category === "field") return 3;
   if (unit.type === "action" && ["hack_faction"].includes(unit.id)) return 4;
-  if (unit.type === "action" && ["hack_enemy"].includes(unit.id)) return 5;
-  if (unit.type === "action" && unit.id.startsWith("recharge")) return 6;
-  
-  if (unit.type === "action" && unit.ref && unit.ref.category === "destroy") return 10;
+  if (unit.type === "action" && unit.id.startsWith("recharge")) return 5;
+  if (unit.type === "action" && ["capture_portal"].includes(unit.id)) return 6;
+  if (unit.type === "action" && ["deploy_resonator"].includes(unit.id)) return 7;
+  if (unit.type === "action" && ["deploy_mod"].includes(unit.id)) return 8;
+  if (unit.type === "action" && ["deploy_beacon"].includes(unit.id)) return 9;
+  if (unit.type === "action" && ["hack_enemy"].includes(unit.id)) return 10;
+  if (unit.type === "action" && ["upgrade_resonator"].includes(unit.id)) return 11;
+  if (unit.type === "action" && ["last_resonator"].includes(unit.id)) return 12;
+  if (unit.type === "action" && unit.ref && unit.ref.category === "destroy") return 15;
   // fallback
-  return 7;
+  return 20;
 }
 
 function isActionAllowedByContext(action, context) {
@@ -45,8 +50,10 @@ function isActionAllowedByContext(action, context) {
       return context.canUseFrackers;
 
     case "capture_portal":
-    case "capture_machina":
       return context.canCapture;
+
+    case "capture_machina":
+      return context.canMachina;
 
     case "create_link":
       return context.canLink;
@@ -56,6 +63,16 @@ function isActionAllowedByContext(action, context) {
     default:
       return true;
   }
+}
+
+function findEquivalenceGroupForAction(actionId) {
+  if (!AP_EQUIVALENCE_GROUPS) return null;
+  for (const group of AP_EQUIVALENCE_GROUPS) {
+    if (group.members.includes(actionId)) {
+      return group;
+    }
+  }
+  return null;
 }
 
 function renderContextOptions() {
@@ -81,60 +98,90 @@ function renderContextOptions() {
   });
 }
 
-// Função utilitária: AP total de um pack
-function getPackAP(pack) {
-  return computePackAP(pack);
-}
-
 // Escolher packs utilizáveis com base no contexto
 function getUsablePacks(context) {
   return AP_PACKS.filter(pack => {
-    // Podemos usar lógica mais fina mais tarde.
-    // Por agora: se for categoria "build", precisa de canCapture.
     if (pack.category === "build" && !context.canCapture) return false;
     if (pack.category === "field" && (!context.canField || !context.canLink)) return false;
-    // Podemos adicionar outras regras aqui.
     return true;
   }).sort((a, b) => a.priority - b.priority);
 }
 
-// Modo simples: tentar resolver delta AP com packs + ações básicas (hacks) 
+// Planner automático: tenta resolver delta AP com packs + ações
 function suggestPlan(currentAP, targetAP, context) {
   const delta = targetAP - currentAP;
 
   if (!targetAP || delta <= 0) {
-    return { delta, exact: false, items: [], message: "Set a higher target AP.", totalAPFromPlan: 0, finalAP: currentAP };
+    return {
+      delta,
+      exact: false,
+      items: [],
+      message: "Set a higher target AP.",
+      totalAPFromPlan: 0,
+      finalAP: currentAP,
+    };
   }
+
+  const eventProfile = getSelectedEventProfile();
+  const apexActive = isApexActive();
 
   const usablePacks = getUsablePacks(context);
   const units = [];
 
+  // Packs
   usablePacks.forEach(pack => {
     units.push({
       type: "pack",
       id: pack.id,
       label: pack.label,
-      ap: getPackAP(pack),
+      ap: computePackAPWithEvents(pack, eventProfile, apexActive),
       ref: pack,
     });
   });
 
-  // adicionar ações básicas (hack, recharge, etc.) como unidades
-  AP_ACTIONS.forEach(action => {  
-    if (!action.visible) return;
+  // Ações básicas (com equivalência)
+  const addedActionIds = new Set();
 
+  AP_ACTIONS.forEach(action => {
+    if (!action.visible) return;
     if (!isActionAllowedByContext(action, context)) return;
 
-    units.push({
+    // Ver se esta ação pertence a um grupo de equivalência
+    const group = findEquivalenceGroupForAction(action.id);
+
+    if (group) {
+      // Se já adicionámos este grupo como unidade, não adicionar de novo
+      if (addedActionIds.has(group.id)) return;
+
+      // Escolher um representante válido
+      const representative = group.members
+        .map(id => AP_ACTIONS.find(a => a.id === id))
+        .find(a => a && a.visible && isActionAllowedByContext(a, context));
+
+      if (!representative) return;
+
+      units.push({
+        type: "equiv-group",
+        id: group.id,
+        label: group.label,
+        ap: getEffectiveActionAP(representative.id, eventProfile, apexActive),
+        ref: group,
+      });
+
+      addedActionIds.add(group.id);
+    } else {
+      // Ação normal (não pertencente a grupo)
+      units.push({
         type: "action",
         id: action.id,
         label: action.label,
-        ap: action.ap,
+        ap: getEffectiveActionAP(action.id, eventProfile, apexActive),
         ref: action,
-    });
-    });
+      });
+    }
+  });
 
-  // Ordenar por priority + ap como antes, para dar ordem de exploração
+  // Ordenar unidades por prioridade + AP para orientar a busca
   const sortedUnits = units.slice().sort((a, b) => {
     const pa = a.ref && typeof a.ref.priority === "number" ? a.ref.priority : 5;
     const pb = b.ref && typeof b.ref.priority === "number" ? b.ref.priority : 5;
@@ -174,23 +221,22 @@ function suggestPlan(currentAP, targetAP, context) {
   };
 }
 
+// Busca exata com DFS + poda
 function searchExactPlan(delta, units, maxSolutions = 100) {
   const solutions = [];
   const n = units.length;
 
-  // Limites de contagem por unidade (podes ajustar por tipo)
   function maxCountForUnit(unit, remainingDelta) {
-    return Math.min(20, Math.floor(remainingDelta / unit.ap)); // por ex. máximo 20 de cada
+    return Math.min(20, Math.floor(remainingDelta / unit.ap));
   }
 
   function dfs(index, remainingDelta, currentItems, currentScore) {
     if (remainingDelta === 0) {
-      // Encontrámos plano exato
       solutions.push({
         items: currentItems.slice(),
         score: currentScore,
       });
-      return solutions.length >= maxSolutions; // parar se já temos muitos
+      return solutions.length >= maxSolutions;
     }
 
     if (index >= n) {
@@ -198,7 +244,6 @@ function searchExactPlan(delta, units, maxSolutions = 100) {
     }
 
     const unit = units[index];
-
     const maxCount = maxCountForUnit(unit, remainingDelta);
 
     for (let count = maxCount; count >= 0; count--) {
@@ -206,7 +251,6 @@ function searchExactPlan(delta, units, maxSolutions = 100) {
       const newRemaining = remainingDelta - apUsed;
       if (newRemaining < 0) continue;
 
-      // Atualizar itens
       if (count > 0) {
         currentItems.push({
           type: unit.type,
@@ -220,16 +264,15 @@ function searchExactPlan(delta, units, maxSolutions = 100) {
 
       const newScore = currentScore + count * unitWeight(unit);
 
-      // Poda simples: se newRemaining > 0 mas não há AP suficiente nos restantes para resolver
       const maxAPRemaining = units
         .slice(index + 1)
         .reduce((sum, u) => sum + maxCountForUnit(u, newRemaining) * u.ap, 0);
+
       if (maxAPRemaining >= newRemaining) {
         const stop = dfs(index + 1, newRemaining, currentItems, newScore);
         if (stop) return true;
       }
 
-      // backtrack
       if (count > 0) {
         currentItems.pop();
       }
@@ -250,7 +293,6 @@ function renderAutoPlan(plan) {
   if (!tbody || !summaryEl) return;
 
   tbody.innerHTML = "";
-
   summaryEl.textContent = plan.message || "";
 
   if (plan.items && plan.items.length > 0) {
@@ -258,10 +300,31 @@ function renderAutoPlan(plan) {
       const tr = document.createElement("tr");
 
       const typeTd = document.createElement("td");
-      typeTd.textContent = item.type === "pack" ? "Pack" : "Action";
+      if (item.type === "pack") {
+        typeTd.textContent = "Pack";
+      } else if (item.type === "equiv-group") {
+        typeTd.textContent = "Equivalent actions";
+      } else {
+        typeTd.textContent = "Action";
+      }
 
       const labelTd = document.createElement("td");
-      labelTd.textContent = item.label;
+      if (item.type === "equiv-group") {
+        const group = AP_EQUIVALENCE_GROUPS.find(g => g.id === item.id);
+        if (group) {
+          const membersLabels = group.members
+            .map(id => {
+              const a = AP_ACTIONS.find(action => action.id === id);
+              return a ? a.label : id;
+            })
+            .join(" / ");
+          labelTd.textContent = membersLabels;
+        } else {
+          labelTd.textContent = item.label;
+        }
+      } else {
+        labelTd.textContent = item.label;
+      }
 
       const apTd = document.createElement("td");
       apTd.textContent = item.ap;
@@ -279,7 +342,6 @@ function renderAutoPlan(plan) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Renderizar opções de contexto
   renderContextOptions();
 
   const autoPlanBtn = document.getElementById("autoPlanBtn");

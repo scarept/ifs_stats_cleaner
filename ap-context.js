@@ -11,6 +11,7 @@ const DEFAULT_CONTEXT = {
   canScan: true,
   canUseBeacons: true,
   canUseFrackers: true,
+  canMachina: true,
 };
 
 // Lista de opções para a UI (checkboxes)
@@ -25,7 +26,8 @@ const CONTEXT_OPTIONS = [
   { id: "canDestroyField", label: "I can destroy fields",          default: true },
   { id: "canScan",         label: "I can upload portal scans",     default: true },
   { id: "canUseBeacons",   label: "I can use beacons/fireworks",   default: true },
-  { id: "canUseFrackers",  label: "I can use frackers",            default: true },
+  { id: "canUseFrackers",  label: "I can use frakkers",            default: true },
+  { id: "canMachina",      label: "I can capture Machina portals", default: true },
 ];
 
 // Função para construir um contexto a partir das checkboxes da UI

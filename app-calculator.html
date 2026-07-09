@@ -31,6 +31,30 @@
         <input id="targetAP" type="number" class="ap-input" placeholder="e.g. 405000000" />
       </section>
 
+      <section class="row boost-section">
+  <h2>AP Boost Settings</h2>
+<p class="hint">
+    Select the active event profile and whether APEX is active. The calculator will apply base and APEX multipliers accordingly.
+  </p>
+
+<div class="boost-grid">
+    <div class="boost-block">
+      <label for="eventProfileSelect">Event profile:</label>
+      <select id="eventProfileSelect">
+        <!-- preenchido por JS via renderBoostOptions -->
+      </select>
+    </div>
+
+    <div class="boost-block">
+      <label>
+        <input type="checkbox" id="apexActiveCheckbox" />
+        APEX active
+      </label>
+    </div>
+  </div>
+
+</section>
+
       <!-- CONTEXT SECTION (nova) -->
       <section class="row context-section">
         <h2>Context (what you can do in this area)</h2>
@@ -130,9 +154,10 @@
     </div>
   </div>
   
-  <script src="ap-config.js"></script>
-  <script src="ap-context.js"></script>
-  <script src="ap-calculator.js"></script>
-  <script src="ap-planner.js"></script>
+<script src="ap-config.js"></script>
+<script src="ap-context.js"></script>
+<script src="ap-events.js"></script>
+<script src="ap-calculator.js"></script>
+<script src="ap-planner.js"></script>
 </body>
 </html>

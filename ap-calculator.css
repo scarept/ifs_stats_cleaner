@@ -295,3 +295,34 @@ label {
     padding: 8px 12px 12px;
   }
 }
+
+
+.boost-section h2 {
+  font-size: 1rem;
+  margin: 0 0 4px 0;
+}
+
+.boost-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  font-size: 0.8rem;
+}
+
+.boost-block {
+  flex: 1 1 240px;
+}
+
+#globalMultiplierOptions label,
+#apexOptions label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  gap: 4px;
+}
+
+@media (max-width: 600px) {
+  .boost-grid {
+    flex-direction: column;
+  }
+}

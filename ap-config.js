@@ -7,42 +7,44 @@ const AP_ACTIONS = [
   { id: "hack_enemy",          label: "Hack Enemy Portal",             ap: 200,   visible: true},
   
   // Portal control / tuning
-  { id: "capture_portal",      label: "Capture Portal",                ap: 675,   visible: false},
-  { id: "capture_machina",     label: "Capture Machina Portal",        ap: 1331,   visible: true},
+  { id: "capture_portal",      label: "Capture Portal",                ap: 675,   visible: false, category: "build"},
+  { id: "capture_machina",     label: "Capture Machina Portal",        ap: 1331,   visible: true, category: "build"},
 
   // Deploy / upgrade
-  { id: "deploy_resonator",    label: "Deploy Resonator",              ap: 125,   visible: true},
-  { id: "last_resonator",      label: "Last Resonator on Portal",      ap: 250,   visible: true},
+  { id: "deploy_resonator",    label: "Deploy Resonator",              ap: 125,   visible: true, category: "build"},
+  { id: "last_resonator",      label: "Last Resonator on Portal",      ap: 250,   visible: true, category: "build"},
   { id: "upgrade_resonator",   
     label: "Upgrade Resonator",
     ap: 65,   
     visible: true,
+    category: "build",
     warning: true,
     warningMessage: "Upgrade only gives AP on resonators deployed by other agents."
   },
 
   // Mods / beacons / scans
-  { id: "deploy_mod",          label: "Deploy Mod",                    ap: 125,   visible: true},
+  { id: "deploy_mod",          label: "Deploy Mod",                    ap: 125,   visible: true, category: "build"},
   { id: "deploy_beacon",       label: "Deploy Beacon",                 ap: 500,   visible: true},
   { id: "deploy_firework",     label: "Deploy Firework",               ap: 500,   visible: true},
   { id: "deploy_frakker",      label: "Deploy Frakker",                ap: 500,   visible: true},
   { id: "upload_scan",         label: "Upload Portal Scan",            ap: 500,   visible: true},
 
   // Links & fields
-  { id: "create_link",         label: "Create Link",                   ap: 313,   visible: true},
+  { id: "create_link",         label: "Create Link",                   ap: 313,   visible: true, category: "field"},
   { id: "create_field",        
     label: "Create Control Field",          
     ap: 1250,   
-    visible: true, 
+    visible: true,
+    category: "field", 
     warning: true,
     warningMessage: "To create a field you need at least one link. Plan links accordingly."
   },
 
   // Destroy / neutralize
-  { id: "destroy_resonator",   label: "Destroy Resonator",             ap: 75,   visible: true},
-  { id: "destroy_mod",         label: "Destroy Mod",                   ap: 80,   visible: true},
-  { id: "destroy_link",        label: "Destroy Link",                  ap: 185,   visible: true},
-  { id: "destroy_field",       label: "Destroy Control Field",         ap: 750,   visible: true},
+  { id: "destroy_resonator",   label: "Destroy Resonator",             ap: 75,   visible: true, category: "destroy"},
+  { id: "destroy_mod",         label: "Destroy Mod",                   ap: 80,   visible: true, category: "destroy"},
+  { id: "destroy_link",        label: "Destroy Link",                  ap: 185,   visible: true, category: "destroy"},
+  { id: "destroy_field",       label: "Destroy Control Field",         ap: 750,   visible: true, category: "destroy"},
 
   // Recharge
   { id: "recharge_near",       label: "Single Recharge (nearby <1km)",        ap: 10,   visible: true},
@@ -75,6 +77,17 @@ const AP_PACKS = [
     category: "build",
     visible: true,
   },
+    {
+    id: "complete_field",
+    label: "3 Link + 1 Field (2,189 AP)",
+    actions: [
+      { actionId: "create_link",    count: 3 },
+      { actionId: "create_field",  count: 1 },
+    ],
+    priority: 1,
+    category: "field",
+    visible: false,
+  },
   {
     id: "link_plus_fields",
     label: "1 Link + 1 Field (1,563 AP)",
@@ -99,14 +112,16 @@ const AP_PACKS = [
   },
 ];
 
-// Utilitário para calcular AP total de um pack com base na tabela de ações
-function computePackAP(pack) {
-  let total = 0;
-  pack.actions.forEach(entry => {
-    const action = AP_ACTIONS.find(a => a.id === entry.actionId);
-    if (action) {
-      total += action.ap * entry.count;
-    }
-  });
-  return total;
-}
+const AP_EQUIVALENCE_GROUPS = [
+  {
+    id: "ap500_special",
+    label: "Deploy Beacon/Frakker/Firework or Upload Scan (500 AP)",
+    members: [
+      "deploy_beacon",
+      "deploy_firework",
+      "deploy_frakker",
+      "upload_scan",
+    ],
+  },
+];
+
